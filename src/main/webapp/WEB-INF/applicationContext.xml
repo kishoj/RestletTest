@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-lazy-init="false" default-autowire="no"
+	default-dependency-check="none" default-merge="false">
+	<bean id="restletTestComponent" class="org.restlet.ext.spring.SpringComponent"
+		lazy-init="default" autowire="default" dependency-check="default">
+		<property name="server">
+			<bean class="org.restlet.ext.spring.SpringServer">
+				<constructor-arg value="http" />
+				<constructor-arg value="3000" />
+			</bean>
+		</property>
+		<property name="defaultTarget" ref="mainApplication" />
+	</bean>
+
+	<bean id="mainApplication" class="com.rest.test.application.MainApplication"
+		lazy-init="default" autowire="default" dependency-check="default">
+		<property name="root" ref="default" />
+	</bean>
+
+	<bean id="default" class="org.restlet.ext.spring.SpringRouter">
+		<property name="attachments">
+			<map>
+				<entry key="/v1" value-ref="root" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
+		<property name="attachments">
+			<map>
+				<entry key="/tests">
+					<bean class="org.restlet.ext.spring.SpringFinder">
+						<lookup-method name="create" bean="testResource" />
+					</bean>
+				</entry>
+				<entry key="/tests/">
+					<bean class="org.restlet.ext.spring.SpringFinder">
+						<lookup-method name="create" bean="testResource" />
+					</bean>
+				</entry>
+				<entry key="/tests/{testId}">
+					<bean class="org.restlet.ext.spring.SpringFinder">
+						<lookup-method name="create" bean="testResource" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="testResource" class="com.rest.test.resources.TestServerResource"
+		scope="prototype" />
+
+	<import resource="applicationContext-spring.xml" />
+</beans>

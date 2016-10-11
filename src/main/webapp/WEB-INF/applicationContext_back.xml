@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-lazy-init="false" default-autowire="no"
+	default-dependency-check="none" default-merge="false">
+	<bean id="restletTestComponent" class="org.restlet.ext.spring.SpringComponent"
+		lazy-init="default" autowire="default" dependency-check="default">
+		<!-- Setting port -->
+		<property name="server"> 
+			<bean class="org.restlet.ext.spring.SpringServer">
+				<constructor-arg value="http" />
+				<constructor-arg value="3000" />
+			</bean>
+		</property>
+		<property name="defaultTarget" ref="mainApplication" />
+	</bean>
+
+	<bean id="mainApplication" class="com.rest.test.application.MainApplication"
+		lazy-init="default" autowire="default" dependency-check="default">
+		<property name="root" ref="router" />
+	</bean>
+	
+	<!-- Define the router -->
+	<bean name="router" class="org.restlet.ext.spring.SpringBeanRouter"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+	<!-- Define all the routes -->
+	<bean name="/tests"
+		class="com.rest.test.resources.TestServerResource"
+		scope="prototype" autowire="byName" lazy-init="default"
+		dependency-check="default" />
+	
+	<bean name="/tests/{testId}"
+		class="com.rest.test.resources.TestServerResource"
+		scope="prototype" autowire="byName" lazy-init="default"
+		dependency-check="default" />	
+	
+	<import resource="applicationContext-spring.xml"/>
+</beans>
